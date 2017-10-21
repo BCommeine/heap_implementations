@@ -25,14 +25,13 @@ public class Test {
         BinaryHeap testAdd = new BinaryHeap();
         Random rand = new Random();
         ArrayList<Integer> intlist = new ArrayList<Integer>();
-        for(int i = 0; i<10; i++){
+        for(int i = 0; i<10000; i++){
             int randomint1 = rand.nextInt(100000) + 1;
             BinaryElement tmp = (BinaryElement) testAdd.insert(randomint1);
             int randomint2 = rand.nextInt(100000) + 1;
             tmp.update(randomint2);
             intlist.add(randomint2);
         }
-        System.out.println(intlist);
         Collections.sort(intlist);
         for(int i: intlist){
             if(i != (int) testAdd.removeMin()){
