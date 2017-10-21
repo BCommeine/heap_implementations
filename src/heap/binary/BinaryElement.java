@@ -32,6 +32,12 @@ public class BinaryElement<T extends Comparable<T>> implements Element {
 
     @Override
     public void update(Comparable value) {
-        this.value = value;
+        if(this.value.compareTo(value) < 0){
+            this.value = value;
+            this.heap.percolateDown(position);
+        } else {
+            this.value = value;
+            this.heap.percolateUp(position);
+        }
     }
 }

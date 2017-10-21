@@ -31,16 +31,16 @@ public class BinaryHeap<T extends Comparable<T>> implements Heap {
         int vrijePlaats;
         if(!isEmpty()){
             vrijePlaats = ++huidigeGrootte;
-            while ((value).compareTo(heap[(vrijePlaats - 1)/2].value())<0){
-                heap[vrijePlaats] = heap[(vrijePlaats - 1) /2];
-                vrijePlaats = (vrijePlaats - 1) / 2;
+                while (value.compareTo(heap[(vrijePlaats - 1)/2].value()) < 0 && vrijePlaats != 0){
+                    setElement(heap[(vrijePlaats - 1) /2], vrijePlaats);
+                    vrijePlaats = (vrijePlaats - 1) / 2;
             }
         } else {
             vrijePlaats = ++huidigeGrootte;
 
         }
         BinaryElement inserted = new BinaryElement(value, this, vrijePlaats);
-        heap[vrijePlaats] = inserted;
+        setElement(inserted, vrijePlaats);
         return inserted;
     }
 
@@ -48,10 +48,12 @@ public class BinaryHeap<T extends Comparable<T>> implements Heap {
         BinaryElement[] origineel = heap;
         heap = new BinaryElement[2 * origineel.length];
         for (int i = 0; i < origineel.length; i++){
+            // Hier gebruik ik niet setElement omdat de positie in de elementen blijft kloppen, en dit dus overbodige complexiteit zou betekenen
             heap[i] = origineel[i];
         }
     }
 
+    // Aangezien de volgorde/positie zowel in de array als in de elementen wordt opgeslagen leek een functie me de beste optie
     public void setElement(BinaryElement el, int position){
         el.setPosition(position);
         heap[position] = el;
@@ -60,20 +62,37 @@ public class BinaryHeap<T extends Comparable<T>> implements Heap {
     @Override
     public Comparable removeMin() throws EmptyHeapException {
         BinaryElement kleinste = findMin();
-        heap[0] = heap[huidigeGrootte--];
+        setElement(heap[huidigeGrootte--], 0);
         percolateDown(0);
         return kleinste.value();
     }
 
-    private void percolateDown(int plaats){
-        if(2 * (plaats + 1) > huidigeGrootte - 1){
+    public void percolateUp(int plaats){
+        if(plaats == 0){
             return;
         }
+        BinaryElement tmp = heap[plaats];
+        int parent = (plaats - 1)/2;
+        boolean OK = true;
+        while(OK && ( tmp.value().compareTo(heap[parent].value()) < 0 )){
+            setElement(heap[parent], plaats);
+            plaats = parent;
+            if( plaats != 0 ){
+                parent = (plaats - 1)/2;
+            } else {
+                OK = false;
+            }
+        }
+        setElement(tmp, plaats);
+    }
+
+    public void percolateDown(int plaats){
+        if(2 * plaats + 1 > huidigeGrootte){ return; }
         BinaryElement tmp = heap[plaats];
         int kind = kleinsteKind(plaats);
         boolean OK = true;
         while(OK && ( heap[kind].value().compareTo(tmp.value()) < 0 )){
-            heap[plaats] = heap[kind];
+            setElement(heap[kind], plaats);
             plaats = kind;
             if( 2 * plaats + 1 <= huidigeGrootte){
                 kind = kleinsteKind(plaats);
@@ -81,7 +100,7 @@ public class BinaryHeap<T extends Comparable<T>> implements Heap {
                 OK = false;
             }
         }
-        heap[plaats] = tmp;
+        setElement(tmp, plaats);
     }
 
     private int kleinsteKind(int plaats){
@@ -101,14 +120,9 @@ public class BinaryHeap<T extends Comparable<T>> implements Heap {
     }
 
     public void removeElement(BinaryElement<T> BinaryElement) {
+        // TODO check als het nieuwe veld sneller is dan 2 keer opvragen van positie
         int positie = BinaryElement.getPosition();
-        heap[positie] = heap[huidigeGrootte--];
+        setElement(heap[huidigeGrootte--], positie);
         percolateDown(positie);
     }
-
-/*
-    public BinaryElement getParent(BinaryElement el){
-        return heap[(el.position - 1)/2];
-    }
-*/
 }
