@@ -3,11 +3,11 @@ package heap.binary;
 import heap.Element;
 
 public class BinaryElement<T extends Comparable<T>> implements Element {
-    private Comparable value;
+    private T value;
     private BinaryHeap heap;
     private int position;
 
-    public BinaryElement(Comparable value, BinaryHeap heap, int position){
+    public BinaryElement(T value, BinaryHeap heap, int position){
         this.value = value;
         this.heap = heap;
         this.position = position;
@@ -20,8 +20,9 @@ public class BinaryElement<T extends Comparable<T>> implements Element {
     public void setPosition(int position){
         this.position = position;
     }
+
     @Override
-    public Comparable value() {
+    public T value() {
         return value;
     }
 
@@ -32,11 +33,14 @@ public class BinaryElement<T extends Comparable<T>> implements Element {
 
     @Override
     public void update(Comparable value) {
-        if(this.value.compareTo(value) < 0){
-            this.value = value;
+
+        if(this.value.compareTo((T) value) == 0) {
+            return;
+        } else if (this.value.compareTo( (T) value) < 0){
+            this.value = (T) value;
             this.heap.percolateDown(position);
         } else {
-            this.value = value;
+            this.value = (T) value;
             this.heap.percolateUp(position);
         }
     }
