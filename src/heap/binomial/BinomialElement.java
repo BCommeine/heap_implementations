@@ -22,6 +22,10 @@ public class BinomialElement <T extends Comparable<T>> implements Element {
         return parent;
     }
 
+    public void setParent(BinomialElement<T> parent){
+        this.parent = parent;
+    }
+
     @Override
     public Comparable value() {
         return value;
@@ -36,4 +40,5 @@ public class BinomialElement <T extends Comparable<T>> implements Element {
     public void update(Comparable value) {
 
     }
+
 }
