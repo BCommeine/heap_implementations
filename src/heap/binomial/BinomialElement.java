@@ -36,9 +36,27 @@ public class BinomialElement <T extends Comparable<T>> implements Element {
         } else if (this.value.compareTo( (T) value) < 0){
             this.value = (T) value;
             this.heap.percolateDown(this);
+            //this.heap.print();
         } else {
             this.value = (T) value;
             this.heap.percolateUp(this, false);
+            //this.heap.print();
+        }
+    }
+
+    public void print(int level) {
+        BinomialElement<T> curr = this;
+        while (curr != null) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < level; i++) {
+                sb.append(" ");
+            }
+            sb.append(curr.value().toString());
+            System.out.println(sb.toString());
+            if (curr.child != null) {
+                curr.child.print(level + 1);
+            }
+            curr = curr.getRightSibling();
         }
     }
 
