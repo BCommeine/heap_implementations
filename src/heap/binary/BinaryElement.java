@@ -1,6 +1,7 @@
 package heap.binary;
 
 import heap.Element;
+import heap.EmptyHeapException;
 
 public class BinaryElement<T extends Comparable<T>> implements Element {
     private T value;
@@ -28,7 +29,10 @@ public class BinaryElement<T extends Comparable<T>> implements Element {
 
     @Override
     public void remove() {
-        heap.removeElement(this);
+        try {
+            heap.removeElement(this);
+        } catch (EmptyHeapException e) {
+        }
     }
 
     @Override

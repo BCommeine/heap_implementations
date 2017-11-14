@@ -1,22 +1,19 @@
 package heap.binomial;
 
 import heap.Element;
+import heap.EmptyHeapException;
 
 import java.util.TreeSet;
 
-public class BinomialElement <T extends Comparable<T>> implements Element {
-   private Comparable<T> value;
-   private int degree;
-   private BinomialHeap<T> heap;
-   private BinomialElement<T> parent;
-   private BinomialElement<T> leftSibling;
-   private BinomialElement<T> rightSibling;
-   private BinomialElement<T> child;
+public class BinomialElement<T extends Comparable<T>> implements Element {
+    private Comparable<T> value;
+    private BinomialHeap<T> heap;
+    private Reference<T> reference;
 
-
-   public BinomialElement(Comparable<T> value, BinomialHeap<T> heap){
-       this.value = value;
-       this.heap = heap;
+    public BinomialElement(Comparable<T> value, BinomialHeap<T> heap) {
+        this.value = value;
+        this.heap = heap;
+        this.reference = new Reference<>(this);
     }
 
     @Override
@@ -26,81 +23,30 @@ public class BinomialElement <T extends Comparable<T>> implements Element {
 
     @Override
     public void remove() {
-        this.heap.remove(this);
+        try {
+            this.heap.remove(this);
+        } catch (EmptyHeapException e) {
+        }
     }
 
     @Override
     public void update(Comparable value) {
-        if(this.value.compareTo((T) value) == 0) {
+        if (this.value.compareTo((T) value) == 0) {
             return;
-        } else if (this.value.compareTo( (T) value) < 0){
+        } else if (this.value.compareTo((T) value) < 0) {
             this.value = (T) value;
-            this.heap.percolateDown(this);
-            //this.heap.print();
+            this.heap.percolateDown(this.getReference());
         } else {
             this.value = (T) value;
-            this.heap.percolateUp(this, false);
-            //this.heap.print();
+            this.heap.percolateUp(this.getReference(), false);
         }
     }
 
-    public void print(int level) {
-        BinomialElement<T> curr = this;
-        while (curr != null) {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < level; i++) {
-                sb.append(" ");
-            }
-            sb.append(curr.value().toString());
-            System.out.println(sb.toString());
-            if (curr.child != null) {
-                curr.child.print(level + 1);
-            }
-            curr = curr.getRightSibling();
-        }
+    public Reference<T> getReference() {
+        return reference;
     }
 
-    public BinomialElement<T> getRightSibling() {
-        return rightSibling;
-    }
-
-    public BinomialElement<T> getParent() {
-        return parent;
-    }
-
-    public void setValue(Comparable value) {
-        this.value = value;
-    }
-
-    public BinomialElement<T> getChild() {
-        return child;
-    }
-
-    public int getDegree() {
-        return degree;
-    }
-
-    public void setRightSibling(BinomialElement<T> rightSibling) {
-        this.rightSibling = rightSibling;
-    }
-
-    public void setChild(BinomialElement<T> child) {
-        this.child = child;
-    }
-
-    public void setParent(BinomialElement<T> parent) {
-        this.parent = parent;
-    }
-
-    public void setDegree(int degree) {
-        this.degree = degree;
-    }
-
-    public BinomialElement<T> getLeftSibling() {
-        return leftSibling;
-    }
-
-    public void setLeftSibling(BinomialElement<T> leftSibling) {
-        this.leftSibling = leftSibling;
+    public void setReference(Reference reference) {
+        this.reference = reference;
     }
 }

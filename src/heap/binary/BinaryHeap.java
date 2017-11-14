@@ -16,6 +16,9 @@ public class BinaryHeap<T extends Comparable<T>> implements Heap {
 
     @Override
     public BinaryElement findMin() throws EmptyHeapException {
+        if(currentSize < 0){
+            throw new EmptyHeapException();
+        }
         return heap[0];
     }
 
@@ -103,8 +106,7 @@ public class BinaryHeap<T extends Comparable<T>> implements Heap {
         return child;
     }
 
-    public void removeElement(BinaryElement<T> BinaryElement) {
-        // TODO check als het nieuwe veld sneller is dan 2 keer opvragen van positie
+    public void removeElement(BinaryElement<T> BinaryElement) throws EmptyHeapException{
         int position = BinaryElement.getPosition();
         setElement(heap[currentSize--], position);
         percolateDown(position);

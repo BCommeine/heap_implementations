@@ -4,166 +4,107 @@ import heap.Element;
 import heap.EmptyHeapException;
 import heap.Heap;
 
+import java.util.EmptyStackException;
+
 public class BinomialHeap<T extends Comparable<T>> implements Heap {
 
-    private BinomialElement<T> heap;
+    private Reference<T> root;
 
     public BinomialHeap() {
-        this.heap = null;
-    }
-
-    public BinomialHeap(BinomialElement<T> element) {
-        this.heap = element;
+        this.root = null;
     }
 
     @Override
     public Element insert(Comparable value) {
         BinomialElement<T> element = new BinomialElement<>(value, this);
-        heap = heapMerge(element);
+        root = heapMerge(element.getReference());
         return element;
     }
 
     @Override
     public Element findMin() throws EmptyHeapException {
-        if (heap == null) {
-            return null;
+        if (root == null) {
+            throw new EmptyHeapException();
         } else {
-            BinomialElement<T> min = heap;
-            BinomialElement<T> next = heap.getRightSibling();
-            while (next != null) {
-                if (next.value().compareTo(min.value()) < 0) {
-                    min = next;
-                }
-                next = next.getRightSibling();
-            }
-            return min;
+            return findMinSibling(root).getElement();
         }
+    }
+
+    public Reference<T> findMinSibling(Reference<T> element) {
+        Reference<T> min = element;
+        while (element != null) {
+            if (element.getElement().value().compareTo(min.getElement().value()) < 0) {
+                min = element;
+            }
+            element = element.getRightSibling();
+        }
+        return min;
     }
 
     @Override
     public Comparable removeMin() throws EmptyHeapException {
         BinomialElement<T> min = (BinomialElement<T>) findMin();
-        removeRoot(min);
+        //Omdat een minimum altijd op de root van zijn tree gaat staan hoeven we niet te percolaten
+        removeRoot(min.getReference());
         return min.value();
     }
 
-    public void print(){
-        heap.print(0);
-        System.out.println("-------------------");
+    public void remove(BinomialElement<T> element) throws EmptyHeapException {
+        percolateUp(element.getReference(), true);
+        removeRoot(element.getReference());
     }
 
-    public void remove(BinomialElement<T> element) {
-        percolateUp(element, true);
-        removeRoot(element);
-        System.out.println("succes");
-        print();
-    }
-
-    public void removeRoot(BinomialElement<T> root) {
+    public void removeRoot(Reference<T> treeRoot) throws EmptyHeapException {
         // We sluiten de boom met het element uit. Hierdoor kunnen we een heapMerge laten plaatsvinden met de rest van de heap, en de kinderen van de uitgesloten boom
-        if(root.getRightSibling() != null){
-            root.getRightSibling().setLeftSibling(root.getLeftSibling());
+        if(treeRoot == root){
+            root = treeRoot.getRightSibling();
         }
-        if(root.getLeftSibling() != null){
-            root.getLeftSibling().setRightSibling(root.getRightSibling());
+        if(treeRoot.getRightSibling() != null){
+            treeRoot.getRightSibling().setLeftSibling(treeRoot.getLeftSibling());
         }
-        if(root == heap){
-            heap = root.getRightSibling();
-        }
-
-        BinomialElement<T> next = root.getChild();
-        //We koppelen de kinderen los van het te-verwijderen element
-        while (next != null) {
-            next.setParent(null);
-            BinomialElement<T> tmp = next.getRightSibling();
-            next.setRightSibling(next.getLeftSibling());
-            next.setLeftSibling(tmp);
-            root = next;
-            next = tmp;
+        if(treeRoot.getLeftSibling() != null){
+            treeRoot.getLeftSibling().setRightSibling(treeRoot.getRightSibling());
         }
 
-        //Aangezien de kinderen van een root een verzameling binomiale bomen is, kunnen we deze gewoon mergen met de overige heap.
-        this.heap = heapMerge(root);
-    }
+        Reference<T> removing = treeRoot;
 
-    private BinomialElement<T> heapMerge(BinomialElement<T> otherHeapHead) {
-        BinomialElement<T> newHead = zip(this, otherHeapHead);
-
-        if (newHead == null) {
-            return null;
-        }
-
-        heap = null;
-
-        BinomialElement<T> current = newHead;
-        BinomialElement<T> next = newHead.getRightSibling();
-
-        while (next != null) {
-            //Hier testen we of we niet met 2 bomen zitten van gelijke graad. Als we met 3 bomen zitten met gelijke graad dan steken we de eerste in het resultaat en mergen de andere 2
-            if (current.getDegree() != next.getDegree() || (next.getRightSibling() != null && next.getRightSibling().getDegree() == current.getDegree())) {
-                current = next;
-            } else {
-                if (current.value().compareTo(next.value()) < 0) {
-                    //Aangezien we de "next" tree mergen in de "current", kunnen we deze gewoon uit de rij halen.
-                    current.setRightSibling(next.getRightSibling());
-                    next.setLeftSibling(null);
-                    if(next.getRightSibling() != null){
-                        next.getRightSibling().setLeftSibling(current);
-                    }
-                    treeMerge(current, next);
-                } else {
-                    //Hier wordt alles wat ingewikkelder: Als de "current" ook de eerste is, dan willen we graag zijn parent teruggeven
-                    BinomialElement<T> previous = current.getLeftSibling();
-                    if (previous == null) {
-                        newHead = next;
-                        next.setLeftSibling(null);
-                    } else {
-                        //In het andere geval gaan we gewoon de "current" uit de rij van treeroots halen
-                        previous.setRightSibling(next);
-                        next.setLeftSibling(previous);
-                    }
-                    treeMerge(next, current);
-                    current = next;
-                }
+        if(treeRoot.getChild() != null){
+            Reference<T> next = treeRoot.getChild();
+            //We koppelen de kinderen los van het te-verwijderen element
+            while (next != null) {
+                next.setParent(null);
+                // OPMERKING: Check of de graad van elke boom aangepast moet worden, vermoedelijk niet maar je weet nooit
+                Reference<T> tmp = next.getRightSibling();
+                next.setRightSibling(next.getLeftSibling());
+                next.setLeftSibling(tmp);
+                treeRoot = next;
+                next = tmp;
             }
-            next = current.getRightSibling();
+            //Aangezien de kinderen van een root een verzameling binomiale bomen is, kunnen we deze gewoon mergen met de overige heap.
+            this.root = heapMerge(treeRoot);
         }
-
-        return newHead;
     }
 
-
-    public void treeMerge(BinomialElement<T> min, BinomialElement<T> max) {
-        max.setParent(min);
-        max.setLeftSibling(null);
-        max.setRightSibling(min.getChild());
-        if(min.getChild() != null){
-            min.getChild().setLeftSibling(max);
-        }
-        min.setChild(max);
-        min.setDegree(min.getDegree() + 1);
-    }
-
-    public BinomialElement<T> zip(BinomialHeap<T> heap1, BinomialElement<T> heap2) {
-        if (heap1.getHeap() == null) {
+    public Reference<T> zip(Reference<T> heap1, Reference<T> heap2) {
+        if (heap1 == null) {
             return heap2;
         } else if (heap2 == null) {
-            return heap1.getHeap();
+            return heap1;
         } else {
 
-            BinomialElement<T> head;
-            BinomialElement<T> head1 = heap1.getHeap();
-            BinomialElement<T> head2 = heap2;
+            Reference<T> head;
+            Reference<T> head1 = heap1;
+            Reference<T> head2 = heap2;
 
-            if (heap1.getHeap().getDegree() <= head2.getDegree()) {
-                head = heap1.getHeap();
+            if (heap1.getDegree() <= head2.getDegree()) {
+                head = heap1;
                 head1 = head.getRightSibling();
             } else {
                 head = heap2;
                 head2 = head.getRightSibling();
             }
 
-            BinomialElement<T> lastHead = head;
+            Reference<T> lastHead = head;
 
             while (head1 != null && head2 != null) {
                 if (head1.getDegree() <= head2.getDegree()) {
@@ -185,111 +126,86 @@ public class BinomialHeap<T extends Comparable<T>> implements Heap {
                 lastHead.setRightSibling(head2);
                 head2.setLeftSibling(lastHead);
             }
-            return head;
+        return head;
         }
     }
 
-    public void percolateUp(BinomialElement<T> element, boolean toRoot) {
-        BinomialElement<T> parent = element.getParent();
-        while (parent != null && (toRoot || element.value().compareTo(parent.value()) < 0)) {
+    private void treeMerge(Reference<T> min, Reference<T> max) {
+        max.setParent(min);
+        max.setLeftSibling(null);
+        max.setRightSibling(min.getChild());
+        if(min.getChild() != null){
+            min.getChild().setLeftSibling(max);
+        }
+        min.setChild(max);
+        min.setDegree(min.getDegree() + 1);
+    }
 
-            //Kopie om te swappen
-            BinomialElement<T> tmpLeft = element.getLeftSibling();
-            BinomialElement<T> tmpRight = element.getRightSibling();
-            BinomialElement<T> tmpChild = element.getChild();
-            int tmpDegree = element.getDegree();
+    private Reference<T> heapMerge(Reference<T> otherHeapHead) {
+        Reference<T> newHead = zip(root, otherHeapHead);
+        if (newHead == null) {
+            return null;
+        }
 
-            //Pas de from-element-to-something referenties aan
-            element.setParent(parent.getParent());
-            if(parent.getChild() == element){
-                element.setChild(parent);
+        Reference<T> current = newHead;
+        Reference<T> next = newHead.getRightSibling();
+
+        while (next != null) {
+            //Hier testen we of we niet met 2 bomen zitten van gelijke graad. Als we met 3 bomen zitten met gelijke graad dan steken we de eerste in het resultaat en mergen de andere 2
+            if (current.getDegree() != next.getDegree() || (next.getRightSibling() != null && next.getRightSibling().getDegree() == current.getDegree())) {
+                current = next;
             } else {
-                element.setChild(parent.getChild()); //Wut
+                if (current.getElement().value().compareTo(next.getElement().value()) < 0) {
+                    //Aangezien we de "next" tree mergen in de "current", kunnen we deze gewoon uit de rij halen.
+                    current.setRightSibling(next.getRightSibling());
+                    next.setLeftSibling(null);
+                    if(next.getRightSibling() != null){
+                        next.getRightSibling().setLeftSibling(current);
+                    }
+                    treeMerge(current, next);
+                } else {
+                    //Hier wordt alles wat ingewikkelder: Als de "current" ook de eerste is, dan willen we graag zijn parent teruggeven
+                    Reference<T> previous = current.getLeftSibling();
+                    if (previous == null) {
+                        newHead = next;
+                        next.setLeftSibling(null);
+                    } else {
+                        //In het andere geval gaan we gewoon de "current" uit de rij van treeroots halen
+                        previous.setRightSibling(next);
+                        next.setLeftSibling(previous);
+                    }
+                    treeMerge(next, current);
+                    current = next;
+                }
             }
-            element.setLeftSibling(parent.getLeftSibling());
-            element.setRightSibling(parent.getRightSibling());
-            element.setDegree(parent.getDegree());
+            next = current.getRightSibling();
+        }
+        return newHead;
+    }
 
-            //Pas de from-something-to-child referenties aan
-            if(parent.getParent() != null){ parent.getParent().setChild(element); }
-            if(parent.getLeftSibling() != null){ parent.getLeftSibling().setRightSibling(element); }
-            if(parent.getRightSibling() != null){ parent.getRightSibling().setLeftSibling(element); }
-            if(parent.getChild() != element){ parent.getChild().setParent(element); }
+    private void swapElements(Reference<T> child, Reference<T> parent){
+        BinomialElement<T> element = child.getElement();
+        child.getElement().setReference(parent);
+        parent.getElement().setReference(child);
+        child.setElement(parent.getElement());
+        parent.setElement(element);
+    }
 
-            //Pas de from-child-to-something referenties aan
-            parent.setParent(element);
-            parent.setChild(tmpChild);
-            parent.setLeftSibling(tmpLeft);
-            parent.setRightSibling(tmpRight);
-            parent.setDegree(tmpDegree);
-
-
-            //Pas de from-something-to-parent referenties aan
-            if(tmpLeft != null){
-                tmpLeft.setRightSibling(parent);
-            }
-            if(tmpRight != null){
-                tmpRight.setLeftSibling(parent);
-            }
-            if(tmpChild != null){
-                tmpChild.setParent(parent);
-            }
-
-            //Laatste referentie
-            if(parent == heap){
-                heap=element;
-            }
+    public void percolateUp(Reference<T> element, boolean toRoot) {
+        Reference<T> parent = element.getParent();
+        while (parent != null && (toRoot || element.getElement().value().compareTo(parent.getElement().value()) < 0)) {
+            swapElements(element, parent);
+            element = parent;
             parent = element.getParent();
         }
     }
 
-    public void percolateDown(BinomialElement<T> element) {
-        BinomialElement<T> child = element.getChild();
-        while (child != null && element.value().compareTo(child.value()) < 0) {
-
-            //Kopie om te swappen
-            BinomialElement<T> tmpLeft = element.getLeftSibling();
-            BinomialElement<T> tmpRight = element.getRightSibling();
-            BinomialElement<T> tmpParent = element.getParent();
-
-            //Pas de from-element-to-something referenties aan
-            element.setParent(child.getParent());
-            element.setChild(child.getChild());
-            element.setLeftSibling(child.getLeftSibling());
-            element.setRightSibling(child.getRightSibling());
-
-            //Pas de from-something-to-child referenties aan
-            if(child.getChild() != null){ child.getChild().setParent(element); }
-            if(child.getLeftSibling() != null){ child.getLeftSibling().setRightSibling(element); }
-            if(child.getRightSibling() != null){ child.getRightSibling().setLeftSibling(element); }
-            if(child.getParent() != element){ child.getParent().setChild(element); }
-
-            //Pas de from-child-to-something referenties aan
-            child.setChild(element);
-            child.setParent(tmpParent);
-            child.setLeftSibling(tmpLeft);
-            child.setRightSibling(tmpRight);
-
-
-            //Pas de from-something-to-parent referenties aan
-            if(tmpLeft != null){
-                tmpLeft.setRightSibling(child);
-            }
-            if(tmpRight != null){
-                tmpRight.setLeftSibling(child);
-            }
-            if(tmpParent != null){
-                tmpParent.setParent(child);
-            }
-            //Laatste referentie
-            if(element == heap){
-                heap = child;
-            }
-            child = child.getChild();
+    public void percolateDown(Reference<T> element) {
+        Reference<T> child = findMinSibling(element.getChild());
+        while (child != null && child.getElement().value().compareTo(element.getElement().value()) < 0) {
+            swapElements(child, element);
+            element = child;
+            child = findMinSibling(element.getChild());
         }
-    }
-
-    public BinomialElement<T> getHeap() {
-        return heap;
     }
 }
