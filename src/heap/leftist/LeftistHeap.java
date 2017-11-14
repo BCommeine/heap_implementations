@@ -32,58 +32,34 @@ public class LeftistHeap<T extends Comparable<T>> implements Heap{
     }
 
     public Comparable<T> remove(LeftistElement<T> element) throws EmptyHeapException {
-        Comparable value = element.value();
-
         //Split de boom in zijn linker en rechterboom
         LeftistElement<T> right = element.getRightChild();
         LeftistElement<T> left = element.getLeftChild();
 
+        //We maken de nieuwe bomen los van het te-verwijderen-element
+        if(left != null){
+            left.setParent(null);
+        }
+        if(right != null){
+            right.setParent(null);
+        }
+
         if(element.getParent() != null){
+            //We mergen de twee bomen tot één nieuwe boom met root "MergedRoot"
+            LeftistElement<T> mergedRoot = fixHeap(zip(left, right));
+            mergedRoot.setParent(element.getParent());
+
+            //We moeten hem nu nog verbinden aan de ouder
             if(element.getParent().getRightChild() == element){
-                if(left != null && right != null){
-                    if(left.value().compareTo(right.value()) < 0){
-                        element.getParent().setRightChild(left);
-                        left.setParent(element.getParent());
-                    } else {
-                        element.getParent().setRightChild(right);
-                        right.setParent(element.getParent());
-                    }
-                } else if(right != null){
-                    element.getParent().setRightChild(right);
-                    right.setParent(element.getParent());
-                } else if(left != null){
-                    element.getParent().setRightChild(left);
-                    left.setParent(element.getParent());
-                }
+                element.setRightChild(mergedRoot);
             } else {
-                if(left != null && right != null){
-                    if(left.value().compareTo(right.value()) < 0){
-                        element.getParent().setLeftChild(left);
-                        left.setParent(element.getParent());
-                    } else {
-                        element.getParent().setLeftChild(right);
-                        right.setParent(element.getParent());
-                    }
-                } else if(right != null){
-                    element.getParent().setLeftChild(right);
-                    right.setParent(element.getParent());
-                } else if(left != null){
-                    element.getParent().setLeftChild(left);
-                    left.setParent(element.getParent());
-                }
+                element.setLeftChild(mergedRoot);
             }
         } else {
-            if(left != null){
-                left.setParent(null);
-            }
-            if(right != null){
-                right.setParent(null);
-            }
+            root = fixHeap(zip(left, right));
         }
-        //Deze 2 bomen mergen we tot een nieuwe leftistheap
-        root = fixHeap(zip(left, right));
 
-        return value;
+        return element.value();
     }
 
     public LeftistElement<T> zip(LeftistElement<T> firstRoot, LeftistElement<T> secondRoot){
@@ -143,7 +119,7 @@ public class LeftistHeap<T extends Comparable<T>> implements Heap{
         while (element.getRightChild() != null){
             element = element.getRightChild();
         }
-        element.setNpl(0);
+        element.setNpl(0); // TODO Misschien is deze toekenning het probleem
 
         LeftistElement<T> newRoot = element;
         element = element.getParent();
