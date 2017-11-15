@@ -208,4 +208,6 @@ public class BinomialHeap<T extends Comparable<T>> implements Heap {
             child = findMinSibling(element.getChild());
         }
     }
+    public void print(){
+    }
 }

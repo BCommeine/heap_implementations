@@ -88,7 +88,6 @@ public abstract class HeapTest {
         for( Element i: verwijderen){
             i.remove();
         }
-
         //Overlopen removemin
         Collections.sort(values);
         for(int i: values){

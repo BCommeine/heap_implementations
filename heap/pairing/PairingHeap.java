@@ -1,10 +1,10 @@
-package heap.skew;
+package heap.pairing;
 
 import heap.Element;
 import heap.EmptyHeapException;
 import heap.Heap;
 
-public class SkewHeap<T extends Comparable<T>>  implements Heap {
+public class PairingHeap<T extends Comparable<T>> implements Heap {
     @Override
     public Element insert(Comparable value) {
         return null;
@@ -18,5 +18,8 @@ public class SkewHeap<T extends Comparable<T>>  implements Heap {
     @Override
     public Comparable removeMin() throws EmptyHeapException {
         return null;
+    }
+
+    public void print(){
     }
 }

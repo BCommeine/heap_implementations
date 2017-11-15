@@ -23,8 +23,8 @@ public class LeftistElement <T extends Comparable<T>> implements Element{
     }
 
     @Override
-    public void remove() {
-        //heap.remove(this);
+    public void remove() throws EmptyHeapException {
+        heap.remove(this);
     }
 
     @Override

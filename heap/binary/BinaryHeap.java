@@ -111,4 +111,7 @@ public class BinaryHeap<T extends Comparable<T>> implements Heap {
         setElement(heap[currentSize--], position);
         percolateDown(position);
     }
+
+    public void print(){
+    }
 }
