@@ -29,6 +29,12 @@ public class LeftistElement <T extends Comparable<T>> implements Element{
 
     @Override
     public void update(Comparable value) {
+        try {
+            heap.remove(this);
+        } catch (EmptyHeapException ex){
+            //TODO Kijk eens naar die exeptions
+        }
+        heap.insert(this);
     }
 
     public void setRightChild(LeftistElement<T> rightChild) {

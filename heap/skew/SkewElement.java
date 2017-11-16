@@ -49,4 +49,8 @@ public class SkewElement <T extends Comparable<T>> implements Element {
     public SkewElement<T> getLeftChild() {
         return leftChild;
     }
+
+    public void setLeftChild(SkewElement<T> leftChild) {
+        this.leftChild = leftChild;
+    }
 }

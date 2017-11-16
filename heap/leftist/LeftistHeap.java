@@ -18,6 +18,11 @@ public class LeftistHeap<T extends Comparable<T>> implements Heap {
         return element;
     }
 
+    public Element insert(LeftistElement<T> element) {
+        root = fixHeap(zip(root, element));
+        return element;
+    }
+
     @Override
     public Element findMin() throws EmptyHeapException {
         if (root == null) {
