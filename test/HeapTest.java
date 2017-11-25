@@ -28,11 +28,10 @@ public abstract class HeapTest {
 
         //Opvullen
         Random random = new Random();
-        for(int i = 0; i < 10; i++){
-            int integer = random.nextInt(30) + 1;
+        for(int i = 0; i < 10000; i++){
+            int integer = random.nextInt(50000) + 1;
             heap.insert(integer);
             values.add(integer);
-            heap.print();
         }
 
         //Overlopen removemin
@@ -43,7 +42,7 @@ public abstract class HeapTest {
 
     }
 
-/*    @Test
+    @Test
     public void removeAndInsertElements() throws EmptyHeapException {
         //Datastructuren initialiseren:
         Heap heap = getHeap();
@@ -81,9 +80,7 @@ public abstract class HeapTest {
         for(int i: values){
             Assert.assertEquals(i, heap.removeMin());
         }
-
     }
-
 
     @Test
     public void fillHeapUpdateValues() throws EmptyHeapException {
@@ -93,12 +90,12 @@ public abstract class HeapTest {
 
         //Opvullen
         Random random = new Random();
-        for(int i = 0; i < 20; i++){
+        for(int i = 0; i < 10000; i++){
             //Put random integer in heap
-            int integer = random.nextInt(100) + 1;
+            int integer = random.nextInt(50000) + 1;
             Element el = heap.insert(integer);
             // Get new random integer, update element and add to list
-            integer = random.nextInt(100) + 1;
+            integer = random.nextInt(50000) + 1;
             values.add(integer);
             el.update(integer);
         }
@@ -137,5 +134,5 @@ public abstract class HeapTest {
         for(int i: values){
             Assert.assertEquals(i, heap.removeMin());
         }
-    }*/
+    }
 }

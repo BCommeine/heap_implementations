@@ -24,6 +24,11 @@ public class SkewHeap<T extends Comparable<T>>  implements Heap {
         return element;
     }
 
+    public Element insert(SkewElement<T> element) {
+        root = fixHeap(zip(root, element));
+        return element;
+    }
+
     @Override
     public Element findMin() throws EmptyHeapException {
         return root;

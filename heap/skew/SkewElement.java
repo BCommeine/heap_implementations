@@ -27,7 +27,12 @@ public class SkewElement <T extends Comparable<T>> implements Element {
 
     @Override
     public void update(Comparable value) {
-
+        heap.remove(this);
+        this.value = value;
+        this.leftChild = null;
+        this.rightChild = null;
+        this.parent = null;
+        heap.insert(this);
     }
 
     public SkewElement<T> getRightChild() {

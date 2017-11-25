@@ -34,6 +34,11 @@ public class LeftistElement <T extends Comparable<T>> implements Element{
         } catch (EmptyHeapException ex){
             //TODO Kijk eens naar die exeptions
         }
+        this.value = value;
+        this.npl = 0;
+        this.leftChild = null;
+        this.rightChild = null;
+        this.parent = null;
         heap.insert(this);
     }
 
