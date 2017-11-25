@@ -110,6 +110,7 @@ public class BinaryHeap<T extends Comparable<T>> implements Heap {
         int position = BinaryElement.getPosition();
         setElement(heap[currentSize--], position);
         percolateDown(position);
+        percolateUp(position);
     }
 
     public void print(){

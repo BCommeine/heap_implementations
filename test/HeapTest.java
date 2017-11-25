@@ -1,7 +1,6 @@
 package test;
 
 import heap.*;
-import heap.leftist.LeftistElement;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -28,8 +27,8 @@ public abstract class HeapTest {
 
         //Opvullen
         Random random = new Random();
-        for(int i = 0; i < 10000; i++){
-            int integer = random.nextInt(50000) + 1;
+        for(int i = 0; i < 100000; i++){
+            int integer = random.nextInt(500000) + 1;
             heap.insert(integer);
             values.add(integer);
         }
@@ -51,26 +50,27 @@ public abstract class HeapTest {
 
         //Opvullen
         Random random = new Random();
-        for(int i = 0; i < 10000; i++){
-            int integer = random.nextInt(50000) + 1;
+        for(int i = 0; i < 100000; i++){
+            int integer = random.nextInt(500000) + 1;
             heap.insert(integer);
             values.add(integer);
         }
 
         //Opvullen
-        for(int i = 0; i < 10000; i++){
-            int integer = random.nextInt(50000) + 1;
+        for(int i = 0; i < 100000; i++){
+            int integer = random.nextInt(500000) + 1;
             Element element = heap.insert(integer);
             elements.add(element);
         }
 
+        //Verwijderen
         for( Element i: elements){
             i.remove();
         }
 
         //Opvullen
-        for(int i = 0; i < 10000; i++){
-            int integer = random.nextInt(50000) + 1;
+        for(int i = 0; i < 100000; i++){
+            int integer = random.nextInt(500000) + 1;
             heap.insert(integer);
             values.add(integer);
         }
@@ -90,12 +90,12 @@ public abstract class HeapTest {
 
         //Opvullen
         Random random = new Random();
-        for(int i = 0; i < 10000; i++){
+        for(int i = 0; i < 100000; i++){
             //Put random integer in heap
-            int integer = random.nextInt(50000) + 1;
+            int integer = random.nextInt(500000) + 1;
             Element el = heap.insert(integer);
             // Get new random integer, update element and add to list
-            integer = random.nextInt(50000) + 1;
+            integer = random.nextInt(500000) + 1;
             values.add(integer);
             el.update(integer);
         }
@@ -116,13 +116,13 @@ public abstract class HeapTest {
 
         //Opvullen
         Random random = new Random();
-        for(int i = 0; i < 10000; i++){
+        for(int i = 0; i < 100000; i++){
             //Put random integer in heap
-            int integer = random.nextInt(50000) + 1;
+            int integer = random.nextInt(500000) + 1;
             heap.insert(integer);
             values.add(integer);
             // Maak tweede integer aan om te verwijderen
-            integer = random.nextInt(50000) + 1;
+            integer = random.nextInt(500000) + 1;
             verwijderen.add(heap.insert(integer));
         }
 

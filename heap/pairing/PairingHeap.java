@@ -16,6 +16,11 @@ public class PairingHeap<T extends Comparable<T>> implements Heap {
         return element;
     }
 
+    public Element insert(PairingElement element) {
+        root = mergeTwoHeaps(root, element);
+        return element;
+    }
+
     @Override
     public Element findMin() throws EmptyHeapException {
         return root;
@@ -138,7 +143,7 @@ public class PairingHeap<T extends Comparable<T>> implements Heap {
                 }
             }
         }
-        
+
         if(element == root){
             root = root1;
         }
