@@ -21,6 +21,11 @@ public class BinomialHeap<T extends Comparable<T>> implements Heap {
         return element;
     }
 
+    public Element insert(BinomialElement element) {
+        root = heapMerge(element.getReference());
+        return element;
+    }
+
     @Override
     public Element findMin() throws EmptyHeapException {
         if (root == null) {

@@ -60,4 +60,12 @@ public class Reference<T extends Comparable<T>> {
     public void setElement(BinomialElement<T> element){
         this.element = element;
     }
+
+    public void clear(){
+        this.parent = null;
+        this.rightSibling = null;
+        this.leftSibling = null;
+        this.child = null;
+        this.degree = 0;
+    }
 }

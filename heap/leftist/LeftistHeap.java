@@ -149,11 +149,14 @@ public class LeftistHeap<T extends Comparable<T>> implements Heap {
                 rightNpl = element.getRightChild().getNpl();
             }
 
-            element.setNpl(Math.min(leftNpl, rightNpl) + 1);
-
             if (leftNpl < rightNpl) {
                 swapChildren(element);
+                rightNpl = leftNpl;
             }
+
+            element.setNpl(rightNpl + 1);
+
+
             newRoot = element;
             element = element.getParent();
         }

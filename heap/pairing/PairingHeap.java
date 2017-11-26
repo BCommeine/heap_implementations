@@ -79,7 +79,7 @@ public class PairingHeap<T extends Comparable<T>> implements Heap {
         }
     }
 
-    public void remove(PairingElement element){
+    public PairingElement remove(PairingElement element){
         // Get first elements to merge
         PairingElement root1 = element.getChild();
         if(root1 != null) {
@@ -147,6 +147,7 @@ public class PairingHeap<T extends Comparable<T>> implements Heap {
         if(element == root){
             root = root1;
         }
+        return root1;
     }
 
     public void print(){

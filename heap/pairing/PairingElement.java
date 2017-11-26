@@ -28,7 +28,7 @@ public class PairingElement <T extends Comparable<T>> implements Element{
 
     @Override
     public void update(Comparable value) {
-        heap.remove(this);
+        PairingElement subTree = heap.remove(this);
         this.value = value;
         this.leftSibling = null;
         this.rightSibling = null;

@@ -30,7 +30,7 @@ public class BinomialElement<T extends Comparable<T>> implements Element {
     }
 
     @Override
-    public void update(Comparable value) {
+    public void update(Comparable value) throws EmptyHeapException {
         if (this.value.compareTo((T) value) == 0) {
             return;
         } else if (this.value.compareTo((T) value) < 0) {
